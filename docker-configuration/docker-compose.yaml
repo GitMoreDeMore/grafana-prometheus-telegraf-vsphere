@@ -1,0 +1,47 @@
+version: "3"
+services:
+  prometheus_server:
+    image: prom/prometheus:v2.17.0
+    volumes:
+    - type: volume
+      source: prometheus_data
+      target: /prometheus
+    - /opt/prometheus.yml:/etc/prometheus/prometheus.yml
+    ports:
+    - 9090:9090
+    privileged: true
+
+  grafana_server:
+    image: grafana/grafana:latest
+    volumes:
+    - type: volume
+      source: grafana_configuration
+      target: /etc/grafana
+    - type: volume
+      source: grafana_data
+      target: /var/lib/grafana
+    ports:
+    - 3000:3000
+    privileged: true
+
+  vmware_exporter_telegraf:
+    image: telegraf:latest
+    ports:
+    - 9273:9273
+    volumes:
+    - /opt/telegraf.conf:/etc/telegraf/telegraf.conf
+
+  # vmware_exporter_prometheus:
+  #   image: vmware_exporter:latest
+  #   ports:
+  #   - 9273:9273
+  #   environment:
+  #     VSPHERE_HOST: 192.168.1.159
+  #     VSPHERE_IGNORE_SSL: True
+  #     VSPHERE_USER: monitoring@vsphere.local
+  #     VSPHERE_PASSWORD: ""
+
+volumes:
+  prometheus_data:
+  grafana_configuration:
+  grafana_data:
